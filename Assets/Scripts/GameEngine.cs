@@ -85,7 +85,7 @@ public class GameEngine : MonoBehaviour
         switch (GameStateMachine)
         {
             case GameStateMachine.MapState:
-                // Por aquí nada...
+                // Por aquí nada todavía...
                 break;
             case GameStateMachine.BattleState:
                 this.ProcessBattle();
@@ -140,6 +140,9 @@ public class GameEngine : MonoBehaviour
     // Char1 ataca a Char2
     public void Attack(Character char1, Character char2)
     {
+        // TODO: Implementar aquí el cálculo de daño de un personaje sobre otro
+        // teniendo en cuenta el tipo de daño utilizado (más adelante se implementará
+        // el sistema de habilidades) y teniendo en cuenta el equipamiento.
         Debug.Log(string.Format("{0} a atacado a {1} y le ha hecho {2} puntos de daño.", char1.Nombre, char2.Nombre, char1.Stats.Corte));
     }
 }

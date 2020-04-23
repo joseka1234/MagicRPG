@@ -38,13 +38,14 @@ public class Interprete : MonoBehaviour
         else if (Regex.IsMatch(Order, @"TEST CHARACTER", RegexOptions.IgnoreCase))
         {
             Character testCharacter = new Character(
-                "TEST", "CharacterSprite.png", new Stats(10, 10, 10, 10, 10, 10, 10,
-                10, 10, 5), new List<Equipo>() { new Equipo("Espada", "Espadota toa wapa", TipoEquipo.Arma, new Stats(0,0,0,0,0,0,0,0,0,0), "") },
+                "Carlos", "Chara2", new Stats(100, 100, 20, 20, 10, 10, 10,
+                10, 10, 10, 10, 10, 10, 10, 10, 5), new List<Equipo>() { new Equipo("Espada", "Espadota toa wapa",
+                TipoEquipo.Arma, new Stats(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0), "") },
                 new Elemento[] { Elemento.Agua, Elemento.Aire }, new Elemento[] { Elemento.Rayo, Elemento.Planta },
                 new Habilidad[] { new Habilidad(Elemento.Fuego, Tipo.Corte, 100) }
             );
 
-            File.WriteAllText(ENEMY_PATH + "FIRST_ENEMY.json", JsonUtility.ToJson(testCharacter));
+            File.WriteAllText(ENEMY_PATH + "PLAYER.json", JsonUtility.ToJson(testCharacter));
         }
         else if (Regex.IsMatch(Order, @"TEXT\s*\'.*\'", RegexOptions.IgnoreCase))
         {
