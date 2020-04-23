@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 public enum GameStateMachine
 {
@@ -26,6 +28,8 @@ public class GameEngine : MonoBehaviour
 
     public GameStateMachine GameStateMachine;
     public BattleStateMachine BattleStateMachine;
+
+    private Character CurrentCharacterTurn;
 
     // Start is called before the first frame update
     void Awake()
@@ -78,7 +82,7 @@ public class GameEngine : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        switch(GameStateMachine)
+        switch (GameStateMachine)
         {
             case GameStateMachine.MapState:
                 // Por aquí nada...
@@ -94,6 +98,7 @@ public class GameEngine : MonoBehaviour
         switch (this.BattleStateMachine)
         {
             case BattleStateMachine.CheckTurn:
+                this.CurrentCharacterTurn = this.Party[0];
                 this.BattleStateMachine = BattleStateMachine.PlayerTurn;
                 break;
 
@@ -101,10 +106,7 @@ public class GameEngine : MonoBehaviour
                 break;
 
             case BattleStateMachine.SelectEnemy:
-                if (Input.GetKeyDown(KeyCode.Mouse0))
-                {
-
-                }
+                this.SelectEnemy();
                 break;
 
             case BattleStateMachine.EnemyTurn:
@@ -115,9 +117,29 @@ public class GameEngine : MonoBehaviour
         }
     }
 
+    private void SelectEnemy()
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            EventSystem eventSystem = GameObject.Find("EventSystem").GetComponent<EventSystem>();
+            PointerEventData pointerEventData = new PointerEventData(eventSystem);
+            pointerEventData.position = Input.mousePosition;
+
+            List<RaycastResult> raysastResults = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointerEventData, raysastResults);
+
+            Match match = Regex.Match(raysastResults[0].gameObject.name, @"Enemy(\d)", RegexOptions.IgnoreCase);
+
+            if (match.Success)
+            {
+                this.Attack(CurrentCharacterTurn, this.Enemies[int.Parse(match.Groups[1].Value)]);
+            }
+        }
+    }
+
     // Char1 ataca a Char2
     public void Attack(Character char1, Character char2)
     {
-        
+        Debug.Log(string.Format("{0} a atacado a {1} y le ha hecho {2} puntos de daño.", char1.Nombre, char2.Nombre, char1.Stats.Corte));
     }
 }
