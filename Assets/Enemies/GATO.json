@@ -1,0 +1,1 @@
+{"Nombre":"Gato","Sprite":"CharacterSprite.png","Vida":10,"Magia":10,"Moral":10,"Corte":10,"Punzante":10,"Contundente":10,"MProyectil":10,"MChorro":10,"MCuerpoCuerpo":10,"Debilidades":[1,2],"Fortalezas":[4,3],"Habilidades":[{"Elemento":0,"Tipo":0,"Poder":100}]}
