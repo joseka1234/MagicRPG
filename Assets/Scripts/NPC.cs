@@ -3,31 +3,31 @@ using System.Linq;
 
 public class NPC : MonoBehaviour
 {
-    public string[] Interaction;
-    public string[] Creation;
+    public string[] Interaccion;
+    public string[] Creacion;
     private CircleCollider2D CircleClollider;
     private GameEngine Engine;
-    private Character[] Characters;
+    private Personaje[] Personajes;
 
     void Start()
     {
         this.CircleClollider = this.GetComponent<CircleCollider2D>();
         this.Engine = GameObject.FindGameObjectWithTag("Engine").GetComponent<GameEngine>();
-        this.CreateCharacter();
+        this.CrearPersonaje();
     }
 
-    public void CreateCharacter()
+    public void CrearPersonaje()
     {
-        this.Characters = new Character[this.Creation.Length];
-        this.Characters = this.Creation.Select((creacion) => this.Engine.Interprete.CreateCharacter(creacion)).ToArray();
+        this.Personajes = new Personaje[this.Creacion.Length];
+        this.Personajes = this.Creacion.Select((creacion) => this.Engine.Interprete.CrearPersonaje(creacion)).ToArray();
     }
 
-    public void Interact()
+    public void Interactuar()
     {
-        this.Engine.Enemies = this.Characters;
-        foreach (string i_interaction in this.Interaction)
+        this.Engine.Enemigos = this.Personajes;
+        foreach (string i_interaction in this.Interaccion)
         {
-            this.Engine.Interprete.ExecuteInteraction(i_interaction);
+            this.Engine.Interprete.EjecutarInteraccion(i_interaction);
         }
     }
 }

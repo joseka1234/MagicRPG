@@ -3,121 +3,136 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Collections;
 
-public enum GameStateMachine
+#region Maquinas Estados
+public enum MaquinaEstadosJuego
 {
-    MapState, BattleState
+    Mapa, Batalla
 }
 
-public enum BattleStateMachine
+public enum MaquinaEstadosBatalla
 {
-    Off, CheckTurn, PlayerTurn,
-    SelectEnemy, EnemyTurn, CheckBattle
+    SinBatalla, ComprobarTurno, TurnoJugador,
+    SeleccionarEnemigo, TurnoEnemigo,
+    ComprobarFinBatalla
 }
+#endregion
 
 public class GameEngine : MonoBehaviour
 {
-    public GameObject PlayerObject;
+    public GameObject ObjetoJugador;
     
     [HideInInspector]
-    public Character[] Party;
+    public Personaje[] Party;
     [HideInInspector]
-    public Character[] Enemies;
+    public Personaje[] Enemigos;
 
     public Interprete Interprete;
 
-    public GameStateMachine GameStateMachine;
-    public BattleStateMachine BattleStateMachine;
+    public MaquinaEstadosJuego MaginaEstadosJuego;
+    public MaquinaEstadosBatalla MaquinaEstadosBatalla;
 
-    private Character CurrentCharacterTurn;
+    private ControladorCanvas ControladorCanvas;
+    private Personaje PersonajeTurnoActual;
 
-    // Start is called before the first frame update
+    #region Preload Region
     void Awake()
     {
-        GameStateMachine = GameStateMachine.MapState;
-        BattleStateMachine = BattleStateMachine.Off;
+        MaginaEstadosJuego = MaquinaEstadosJuego.Mapa;
+        MaquinaEstadosBatalla = MaquinaEstadosBatalla.SinBatalla;
         this.Interprete = this.GetComponent<Interprete>();
         DontDestroyOnLoad(this);
     }
 
     void Start()
     {
-        this.Party = new Character[] { this.Interprete.CreateCharacter("PLAYER") };
-    }
-    
-    private void OnLevelWasLoaded(int level)
-    {
-        if (this.BattleStateMachine != BattleStateMachine.Off)
-        {
-            // TODO: Hacer que se carguen los sprites y tal
-            // de los miembros de la party y de los enemigos.
-            this.LoadEnemiesSprites();
-            this.LoadPartySprites();
-            GameObject.Find("AttackButton").GetComponent<Button>().onClick.AddListener(
-                () => this.BattleStateMachine = BattleStateMachine.SelectEnemy
-            );
-        }
+        this.Party = new Personaje[] { this.Interprete.CrearPersonaje("PLAYER") };
     }
 
-    private void LoadEnemiesSprites()
+    private void CargarSpritesEnemigos()
     {
-        for (int i = 0; i < this.Enemies.Length; i++)
+        for (int i = 0; i < this.Enemigos.Length; i++)
         {
             Image image = GameObject.Find("Enemy" + i).GetComponent<Image>();
-            image.sprite = this.Enemies[i].GetSprite()[6];
+            image.sprite = ControladorPersonaje.GetSprite(this.Enemigos[i])[6];
             image.color = Color.white;
         }
     }
 
-    private void LoadPartySprites()
+    private void CargarSpritesParty()
     {
         for (int i = 0; i < this.Party.Length; i++)
         {
             Image image = GameObject.Find("Player" + i).GetComponent<Image>();
-            image.sprite = this.Party[i].GetSprite()[18];
+            image.sprite = ControladorPersonaje.GetSprite(this.Party[i])[18];
             image.color = Color.white;
         }
     }
 
-    // Update is called once per frame
+    private void OnLevelWasLoaded(int level)
+    {
+        if (this.MaquinaEstadosBatalla != MaquinaEstadosBatalla.SinBatalla)
+        {
+            this.ControladorCanvas = GameObject.FindGameObjectWithTag("CanvasController").GetComponent<ControladorCanvasCombate>();
+
+            this.CargarSpritesEnemigos();
+            this.CargarSpritesParty();
+            GameObject.Find("AttackButton").GetComponent<Button>().onClick.AddListener(
+                () => this.MaquinaEstadosBatalla = MaquinaEstadosBatalla.SeleccionarEnemigo
+            );
+        }
+    }
+    #endregion
+
     void Update()
     {
-        switch (GameStateMachine)
+        switch (MaginaEstadosJuego)
         {
-            case GameStateMachine.MapState:
+            case MaquinaEstadosJuego.Mapa:
                 // Por aquí nada todavía...
                 break;
-            case GameStateMachine.BattleState:
-                this.ProcessBattle();
+            case MaquinaEstadosJuego.Batalla:
+                this.ProcesarBatalla();
                 break;
         }
     }
 
-    private void ProcessBattle()
+    #region Battle Region
+    private bool Atacando = false;
+
+    private void ProcesarBatalla()
     {
-        switch (this.BattleStateMachine)
+        switch (this.MaquinaEstadosBatalla)
         {
-            case BattleStateMachine.CheckTurn:
-                this.CurrentCharacterTurn = this.Party[0];
-                this.BattleStateMachine = BattleStateMachine.PlayerTurn;
+            case MaquinaEstadosBatalla.ComprobarTurno:
+                this.PersonajeTurnoActual = this.Party[0];
+                this.MaquinaEstadosBatalla = MaquinaEstadosBatalla.TurnoJugador;
                 break;
 
-            case BattleStateMachine.PlayerTurn:
+            case MaquinaEstadosBatalla.TurnoJugador:
+                this.MostrarMenu();
                 break;
 
-            case BattleStateMachine.SelectEnemy:
-                this.SelectEnemy();
+            case MaquinaEstadosBatalla.SeleccionarEnemigo:
+                if (!Atacando)
+                {
+                    this.MostrarMensajeBatalla("Selecciona un enemigo");
+                    this.SeleccionarEnemigo();
+                }
                 break;
 
-            case BattleStateMachine.EnemyTurn:
+            case MaquinaEstadosBatalla.TurnoEnemigo:
+                this.MostrarMensajeBatalla("¡El enemigo ha atacado!");
+                this.MaquinaEstadosBatalla = MaquinaEstadosBatalla.ComprobarTurno;
                 break;
 
-            case BattleStateMachine.CheckBattle:
+            case MaquinaEstadosBatalla.ComprobarFinBatalla:
                 break;
         }
     }
 
-    private void SelectEnemy()
+    private void SeleccionarEnemigo()
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
@@ -125,24 +140,47 @@ public class GameEngine : MonoBehaviour
             PointerEventData pointerEventData = new PointerEventData(eventSystem);
             pointerEventData.position = Input.mousePosition;
 
-            List<RaycastResult> raysastResults = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(pointerEventData, raysastResults);
+            List<RaycastResult> raycastResults = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointerEventData, raycastResults);
 
-            Match match = Regex.Match(raysastResults[0].gameObject.name, @"Enemy(\d)", RegexOptions.IgnoreCase);
+            Match match = Regex.Match(raycastResults[0].gameObject.name, @"Enemy(\d)", RegexOptions.IgnoreCase);
 
             if (match.Success)
             {
-                this.Attack(CurrentCharacterTurn, this.Enemies[int.Parse(match.Groups[1].Value)]);
+                StartCoroutine(this.Atacar(PersonajeTurnoActual, this.Enemigos[int.Parse(match.Groups[1].Value)]));
             }
         }
     }
 
     // Char1 ataca a Char2
-    public void Attack(Character char1, Character char2)
+    public IEnumerator Atacar(Personaje char1, Personaje char2)
     {
         // TODO: Implementar aquí el cálculo de daño de un personaje sobre otro
         // teniendo en cuenta el tipo de daño utilizado (más adelante se implementará
         // el sistema de habilidades) y teniendo en cuenta el equipamiento.
-        Debug.Log(string.Format("{0} a atacado a {1} y le ha hecho {2} puntos de daño.", char1.Nombre, char2.Nombre, char1.Stats.Corte));
+        this.Atacando = true;
+        this.MostrarMensajeBatalla(
+            string.Format("{0} a atacado a {1} y le ha hecho {2} puntos de daño.\nPulsa A para continuar",
+                            char1.Nombre, char2.Nombre, char1.Stats.Corte)
+        );
+        yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.Joystick1Button0) || Input.GetKeyDown(KeyCode.A));
+        this.MaquinaEstadosBatalla = MaquinaEstadosBatalla.ComprobarTurno;
+        this.Atacando = false;
     }
+
+    private void MostrarMensajeBatalla(string _Mensaje)
+    {
+        ControladorCanvasCombate ccc = this.ControladorCanvas as ControladorCanvasCombate;
+        ccc.Botones.SetActive(false);
+        ccc.Mensajes.SetActive(true);
+        ccc.SetMensaje(_Mensaje);
+    }
+
+    private void MostrarMenu()
+    {
+        ControladorCanvasCombate ccc = this.ControladorCanvas as ControladorCanvasCombate;
+        ccc.Botones.SetActive(true);
+        ccc.Mensajes.SetActive(false);
+    }
+    #endregion
 }

@@ -55,16 +55,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\Character.cs" />
-     <Compile Include="Assets\Scripts\CharacterController.cs" />
      <Compile Include="Assets\Scripts\Combate.cs" />
-     <Compile Include="Assets\Scripts\Equipo.cs" />
+     <Compile Include="Assets\Scripts\ControladorJugador.cs" />
+     <Compile Include="Assets\Scripts\Controladores\ControladorCanvas.cs" />
+     <Compile Include="Assets\Scripts\Controladores\ControladorCanvasCombate.cs" />
+     <Compile Include="Assets\Scripts\Controladores\ControladorPersonaje.cs" />
      <Compile Include="Assets\Scripts\GameEngine.cs" />
-     <Compile Include="Assets\Scripts\Habilidad.cs" />
+     <Compile Include="Assets\Scripts\IA.cs" />
      <Compile Include="Assets\Scripts\Interprete.cs" />
-     <Compile Include="Assets\Scripts\Item.cs" />
+     <Compile Include="Assets\Scripts\Models\Enemigo.cs" />
+     <Compile Include="Assets\Scripts\Models\Equipo.cs" />
+     <Compile Include="Assets\Scripts\Models\Estadisticas.cs" />
+     <Compile Include="Assets\Scripts\Models\Habilidad.cs" />
+     <Compile Include="Assets\Scripts\Models\Objeto.cs" />
+     <Compile Include="Assets\Scripts\Models\Personaje.cs" />
      <Compile Include="Assets\Scripts\NPC.cs" />
-     <Compile Include="Assets\Scripts\Stats.cs" />
      <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap.shader" />

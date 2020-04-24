@@ -262,10 +262,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41a77e5e9899c404ca28b1ff0ebb5707, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Interaction:
+  Interaccion:
   - BATTLE
-  Creation:
-  - LOBO
+  Creacion:
+  - ENEMIGO
+  - ENEMIGO
 --- !u!1 &237972016
 GameObject:
   m_ObjectHideFlags: 0
@@ -298,10 +299,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41a77e5e9899c404ca28b1ff0ebb5707, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Interaction:
+  Interaccion:
   - TEST CHARACTER
-  Creation:
-  - GATO
+  Creacion: []
 --- !u!58 &237972018
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -589,7 +589,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b01b6dcad595bc24181b482852c18f22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 2
+  Velocidad: 1
+  MovimientoBloqueado: 0
 --- !u!61 &1724369234
 BoxCollider2D:
   m_ObjectHideFlags: 0
